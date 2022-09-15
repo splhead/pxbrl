@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xbrli:xbrl xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:gl-bus="http://www.xbrl.org/int/gl/bus/2015-03-25" xmlns:gl-cor="http://www.xbrl.org/int/gl/cor/2015-03-25" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <link:schemaRef xlink:href="SICONFI/cor/ext/gl/plt/case-c-b-m-u-t-s/gl-plt-all-2015-03-25.xsd" xlink:type="simple" />
+</xbrli:xbrl>
