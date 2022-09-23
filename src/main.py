@@ -1,41 +1,68 @@
 #!/usr/bin/python
 from os.path import exists as file_exists, dirname, join
-from xml.etree.ElementTree import Element, SubElement, tostring, indent, parse
+from xml.etree.ElementTree import Element, tostring, indent, parse, iterparse, register_namespace
 
 tags: list = []
 tags_nao_repetidas: set
 
-def le_modelo(nome_do_arquivo):
-  diretorio_atual = dirname(__file__)
-  caminho_do_modelo = join(diretorio_atual, nome_do_arquivo)
-  
-  if file_exists(caminho_do_modelo):
-    arvore = parse(caminho_do_modelo)
-    for filho in arvore.getroot():
-      tags.append(filho.tag.split('}')[1])
-    tags_nao_repetidas = set(tags)
-    print(sorted(tags_nao_repetidas), len(tags_nao_repetidas))
-  else:
-    print('O modelo não foi encontrado')
-
-modelo = 'aapl-20090926.xml'
-# modelo = 'modelo.xbrl'
-le_modelo(modelo)
-'''
-
 # faz as identações corretas e adiciona a declaração xml
+
+
 def prettify(element: Element):
-  indent(element)
-  return tostring(element, 'utf-8',xml_declaration=True)
+    """ documenta cao"""
+    indent(element)
+    return tostring(element, 'utf-8', xml_declaration=True)
 
 # cria o arquivo
+
+
 def cria_arquivo(root):
-  with open("./src/instance.xml", "wb") as file:
-    file.write(prettify(root))
+    with open("./src/instance.xml", "wb") as file:
+        file.write(prettify(root))
+
 
 def adicionar_atributos(tag, atributos: dict[str, str]):
-  for chave, valor in atributos.items():
-    tag.set(chave, valor)
+    for chave, valor in atributos.items():
+        tag.set(chave, valor)
+
+
+def register_all_namespaces(filename):
+    namespaces = dict(
+        [node for _, node in iterparse(filename, events=['start-ns'])])
+    for ns in namespaces:
+        register_namespace(ns, namespaces[ns])
+
+
+def le_modelo(nome_do_arquivo):
+    diretorio_atual = dirname(__file__)
+    caminho_do_modelo = join(diretorio_atual, nome_do_arquivo)
+
+    if file_exists(caminho_do_modelo):
+        register_all_namespaces(caminho_do_modelo)
+        arvore = parse(caminho_do_modelo)
+
+        novo_xbrl = arvore.getroot()
+        print(novo_xbrl[0])
+        # cria_arquivo(novo_xbrl)
+        # le tags
+        # for filho in arvore.getroot():
+        #     tags.append(filho.tag.split('}')[1])
+        #     tags_nao_repetidas = set(tags)
+        #     print(sorted(tags_nao_repetidas), len(tags_nao_repetidas))
+
+    else:
+        print('O modelo não foi encontrado')
+
+
+# modelo = 'aapl-20090926.xml'
+modelo = 'modelo.xbrl'
+le_modelo(modelo)
+
+
+'''
+1 - verificar se tem modelo ou é novo
+
+2 - criar com base no modelo ou um novo 
 
 # cria o primeiro elemento
 xbrl = Element('xbrli:xbrl')
