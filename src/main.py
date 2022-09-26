@@ -1,19 +1,16 @@
 #!/usr/bin/python
 from os.path import exists as file_exists, dirname, join
-from xml.etree.ElementTree import Element, tostring, indent, parse, iterparse, register_namespace
 
-tags: list = []
-tags_nao_repetidas: set
+from xml.etree.ElementTree import Element, SubElement, tostring, indent, parse, iterparse, register_namespace
 
-# faz as identações corretas e adiciona a declaração xml
+namespaces: dict
+raiz: Element
 
 
 def prettify(element: Element):
-    """ documenta cao"""
+    """faz as identações corretas e adiciona a declaração xml"""
     indent(element)
     return tostring(element, 'utf-8', xml_declaration=True)
-
-# cria o arquivo
 
 
 def cria_arquivo(root):
@@ -26,69 +23,72 @@ def adicionar_atributos(tag, atributos: dict[str, str]):
         tag.set(chave, valor)
 
 
-def register_all_namespaces(filename):
-    namespaces = dict(
+def registra_todos_namespaces(filename):
+    '''corrige os prefixos dos namespaces'''
+    def prefix_namespaces(temp_namespaces):
+        namespaces_atualizados = {}
+        for item in temp_namespaces.items():
+            if item[0] != '':
+                namespaces_atualizados.update({'xmlns:' + item[0]: item[1]})
+        return namespaces_atualizados
+
+    temp_namespaces = dict(
         [node for _, node in iterparse(filename, events=['start-ns'])])
-    for ns in namespaces:
-        register_namespace(ns, namespaces[ns])
+
+    for ns in temp_namespaces:
+        register_namespace(ns, temp_namespaces[ns])
+
+    global namespaces
+    namespaces = prefix_namespaces(temp_namespaces)
 
 
-def le_modelo(nome_do_arquivo):
+def local_do_arquivo(nome_do_arquivo):
     diretorio_atual = dirname(__file__)
-    caminho_do_modelo = join(diretorio_atual, nome_do_arquivo)
+    return join(diretorio_atual, nome_do_arquivo)
 
-    if file_exists(caminho_do_modelo):
-        register_all_namespaces(caminho_do_modelo)
-        arvore = parse(caminho_do_modelo)
 
-        novo_xbrl = arvore.getroot()
-        print(novo_xbrl[0])
-        # cria_arquivo(novo_xbrl)
-        # le tags
-        # for filho in arvore.getroot():
-        #     tags.append(filho.tag.split('}')[1])
-        #     tags_nao_repetidas = set(tags)
-        #     print(sorted(tags_nao_repetidas), len(tags_nao_repetidas))
+def existe_modelo(nome_do_arquivo):
+    caminho_do_modelo = local_do_arquivo(nome_do_arquivo)
+    arquivo_existe = file_exists(caminho_do_modelo)
 
+    if arquivo_existe:
+        return arquivo_existe
     else:
-        print('O modelo não foi encontrado')
+        print(f'O arquivo {nome_do_arquivo} não foi encontrado')
 
 
-# modelo = 'aapl-20090926.xml'
-modelo = 'modelo.xbrl'
-le_modelo(modelo)
+def carrega_modelo(nome_do_arquivo):
+    caminho_do_modelo = local_do_arquivo(nome_do_arquivo)
+    registra_todos_namespaces(caminho_do_modelo)
+    arvore = parse(caminho_do_modelo)
+    global raiz
+    raiz = arvore.getroot()
 
 
-'''
-1 - verificar se tem modelo ou é novo
+def main():
+    # tem um arquivo como modelo ou vai partir do padrão
+    arquivo_de_entrada = 'aapl-20090926.xml'
+    if existe_modelo(arquivo_de_entrada):
+        carrega_modelo(arquivo_de_entrada)
+    else:
+        modelo_padrao = 'modelo.xbrl'
+        carrega_modelo(modelo_padrao)
 
-2 - criar com base no modelo ou um novo 
+    # cria o primeiro elemento
+    xbrl = Element(raiz.tag)
+    adicionar_atributos(xbrl, namespaces)
+    # # TODO: perguntar se quer editar ou adicionar namespaces
 
-# cria o primeiro elemento
-xbrl = Element('xbrli:xbrl')
+    schema_ref_do_modelo = raiz.find(
+        '{http://www.xbrl.org/2003/linkbase}schemaRef')
 
-adicionar_atributos(
-  xbrl, 
-  {
-    'xmlns:xbrli':'http://www.xbrl.org/2003/instance',
-    'xmlns:gl-bus':'http://www.xbrl.org/int/gl/bus/2015-03-25',
-    'xmlns:gl-cor':'http://www.xbrl.org/int/gl/cor/2015-03-25',
-    'xmlns:iso4217':'http://www.xbrl.org/2003/iso4217',
-    'xmlns:link':'http://www.xbrl.org/2003/linkbase',
-    'xmlns:xlink':'http://www.w3.org/1999/xlink',
-    'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance'
-  }
-)
+    schema_ref = SubElement(xbrl, schema_ref_do_modelo.tag)
+    adicionar_atributos(schema_ref, schema_ref_do_modelo.attrib)
+    # # TODO: perguntar se quer editar ou adicionar atributos
 
-link_schema_ref = SubElement(xbrl,'link:schemaRef')
+    # # TODO: criar contextos e permitir sua edição
 
-adicionar_atributos(
-  link_schema_ref,
-  {
-    'xlink:href':'SICONFI/cor/ext/gl/plt/case-c-b-m-u-t-s/gl-plt-all-2015-03-25.xsd',
-    'xlink:type':'simple'
-  }
-)
+    cria_arquivo(xbrl)
 
-cria_arquivo(xbrl)
-'''
+
+main()
