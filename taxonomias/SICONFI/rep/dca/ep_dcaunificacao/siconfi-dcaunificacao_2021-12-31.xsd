@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://fazenda.gov.br/siconfi/rep/dca/eq_dcaunificacao/siconfi-dcaunificacao_2021-12-31" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:siconfi-dcaunificacao="http://fazenda.gov.br/siconfi/rep/dca/eq_dcaunificacao/siconfi-dcaunificacao_2021-12-31" xmlns:ca="http://xbrl.org/2008/assertion/consistency" xmlns:gen="http://xbrl.org/2008/generic" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:nonnum="http://www.xbrl.org/dtr/type/non-numeric" xmlns:variable="http://xbrl.org/2008/variable" xmlns:xfi="http://www.xbrl.org/2008/function/instance" xmlns:xl="http://www.xbrl.org/2003/XLink" xmlns:cf="http://xbrl.org/2008/filter/concept" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:ea="http://xbrl.org/2008/assertion/existence" xmlns:asf="http://xbrl.org/2010/filter/aspect-cover" xmlns:num="http://www.xbrl.org/dtr/type/numeric" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:validation="http://xbrl.org/2008/validation" xmlns:formula="http://xbrl.org/2008/formula" xmlns:msg="http://xbrl.org/2010/message" xmlns:va="http://xbrl.org/2008/assertion/value" xmlns:label="http://xbrl.org/2008/label" xmlns:gf="http://xbrl.org/2008/filter/general" xmlns:bf="http://xbrl.org/2008/filter/boolean" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xbrli="http://www.xbrl.org/2003/instance">
+  <xsd:annotation>
+    <xsd:appinfo>
+      <link:linkbaseRef xlink:type="simple" xlink:href="for-siconfi-dcaunificacao_2021-12-31.xml" xlink:arcrole="http://www.w3.org/1999/xlink/properties/linkbase"/>
+    </xsd:appinfo>
+  </xsd:annotation>
+  <xsd:import namespace="http://www.xbrl.org/2003/instance" schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+  <xsd:import namespace="http://fazenda.gov.br/siconfi/rep/dca/anexo1abhi/siconfi-dca-anexo1abhi_2021-12-31" schemaLocation="../anexo1abhi/siconfi-dca-anexo1abhi_2021-12-31.xsd"/>
+  <xsd:import namespace="http://fazenda.gov.br/siconfi/rep/dca/anexo1defg/siconfi-dca-anexo1defg_2021-12-31" schemaLocation="../anexo1defg/siconfi-dca-anexo1defg_2021-12-31.xsd"/>
+  <xsd:import namespace="http://fazenda.gov.br/siconfi/rep/dca/anexo1c/siconfi-dca-anexo1c_2021-12-31" schemaLocation="../anexo1c/siconfi-dca-anexo1c_2021-12-31.xsd"/>
+  </xsd:schema>
