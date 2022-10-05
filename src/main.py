@@ -3,6 +3,9 @@ from os.path import exists as file_exists, dirname, join
 
 from xml.etree.ElementTree import Element, SubElement, tostring, indent, parse, iterparse, register_namespace, dump
 
+from menu import gerar_menu
+
+
 namespaces: dict
 raiz: Element
 
@@ -14,7 +17,7 @@ def prettify(element: Element):
                     default_namespace=None)
 
 
-def cria_arquivo(root):
+def salva_arquivo(root):
     with open("./src/instance.xml", "wb") as file:
         file.write(prettify(root))
 
@@ -31,9 +34,9 @@ def adiciona_atributos(elemento: Element, atributos: dict[str, str]):
         elemento.set(remove_namespace(chave), valor)
 
 
-def remover_atributos(elemento: Element,
-                      atributos_para_remover: dict[str, str] = {},
-                      remover_todos: bool = False):
+def remove_atributos(elemento: Element,
+                     atributos_para_remover: dict[str, str] = {},
+                     remover_todos: bool = False):
     atributos_antigos = elemento.attrib
     elemento.clear()
     if (remover_todos):
@@ -101,13 +104,19 @@ def cria_xbrl(tag: str):
     xbrl_elemento = Element(remove_namespace(tag))
 
     adiciona_atributos(xbrl_elemento, namespaces)
-    # remover_atributos(xbrl_elemento, atributos_para_remover={
-    #    'xmlns:gl-cor': 'http://www.xbrl.org/int/gl/cor/2015-03-25'})
 
-    # remover_atributos(xbrl_elemento, remover_todos=True)
+    def concluir():
+        return
+
     # # TODO: perguntar se quer editar ou adicionar namespaces
-    menu(xbrl_elemento)
+    opcoes = {
+        '1': ('Listar atributos', lista_atributos, [xbrl_elemento]),
+        '2': ('Adicionar atributo', lista_atributos),
+        '3': ('Remover atributo', lista_atributos),
+        '4': ('Concluir', concluir)
+    }
 
+    gerar_menu(opcoes, '4')
     return xbrl_elemento
 
 
@@ -133,29 +142,14 @@ def main():
 
     # # TODO: criar contextos e permitir sua edição
 
-    cria_arquivo(xbrl)
+    salva_arquivo(xbrl)
 
 
-def listar_atributos(elemento: Element):
+def lista_atributos(elemento: Element):
     print(f'Abaixo são os atributos para a tag <{elemento.tag}>\n')
     for indice, atributo in enumerate(elemento.attrib, start=1):
         print(f'{indice} {atributo} => {elemento.attrib[atributo]}')
-
-
-def menu(elemento: Element):
-
-    opcao_escolhida = input('''
-        Escolha uma opção:
-
-        1 - Listar atributo(s)
-        < - voltar ou sair
-        \n
-    ''')
-    if (opcao_escolhida == '<'):
-        return
-    elif (opcao_escolhida == '1'):
-        listar_atributos(elemento)
-        menu(elemento)
+    print('\n')
 
 
 if __name__ == "__main__":
