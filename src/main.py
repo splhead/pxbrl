@@ -2,6 +2,9 @@
 from os.path import exists as file_exists, dirname, join
 
 from xml.etree.ElementTree import Element, SubElement, tostring, indent, parse, iterparse, register_namespace, dump
+from entrada import Entrada
+
+from validacoes.validador_tamanho import ValidadorTamanho
 
 from menu import gerar_menu
 
@@ -27,6 +30,27 @@ def salva_arquivo(root):
 #         return tag.split('}')[0][1:]
 #     except IndexError:
 #         return tag
+
+def menu_adiciona_atributos():
+    atributo = {}
+
+    def editar_atributo():
+        perguntas = [{
+            'nome': 'nome',
+            'mensagem': 'Qual o nome do atributo que deseja adicionar?',
+            'validador': ValidadorTamanho()
+        }]
+
+    def cancelar():
+        return
+
+    opcoes = {
+        '1': ('Editar do atributo', editar_atributo),
+        '3': ('Salvar atributo', lista_atributos),
+        '4': ('Cancelar', cancelar)
+    }
+
+    gerar_menu(opcoes, '4')
 
 
 def adiciona_atributos(elemento: Element, atributos: dict[str, str]):
@@ -111,7 +135,7 @@ def cria_xbrl(tag: str):
     # # TODO: perguntar se quer editar ou adicionar namespaces
     opcoes = {
         '1': ('Listar atributos', lista_atributos, [xbrl_elemento]),
-        '2': ('Adicionar atributo', lista_atributos),
+        '2': ('Adicionar atributo', menu_adiciona_atributos),
         '3': ('Remover atributo', lista_atributos),
         '4': ('Concluir', concluir)
     }
